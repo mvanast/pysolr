@@ -299,10 +299,11 @@ class GroupedResults(object):
 
     
 class Solr(object):
-    def __init__(self, url, decoder=None, auth=None, timeout=60):
+    def __init__(self, url, decoder=None, auth=None, verify=True, timeout=60):
         self.decoder = decoder or json.JSONDecoder()
         self.auth = auth
         self.url = url
+        self.verify = verify
         self.scheme, netloc, path, query, fragment = urlsplit(url)
         self.base_url = urlunsplit((self.scheme, netloc, '', '', ''))
         netloc = netloc.split(':')
@@ -323,7 +324,7 @@ class Solr(object):
         start_time = time.time()
         self.log.debug("Starting request to '%s' (%s) with body '%s'..." % (url, method, str(body)[:10]))
         request = requests.request(method, url, data=body, headers=headers,
-                                   timeout=self.timeout, auth=self.auth)
+                                   timeout=self.timeout, auth=self.auth, verify=self.verify)
         end_time = time.time()
         self.log.info("Finished '%s' (%s) with body '%s' in %0.3f seconds." %
                       (url, method, str(body)[:10], end_time - start_time))
